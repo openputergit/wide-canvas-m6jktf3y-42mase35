@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YumYug SuperApp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Poppins', sans-serif; }
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        .mini-app-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%);
+            transition: all 0.3s ease;
+        }
+        .mini-app-card:hover {
+            transform: translateY(-5px);
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.1) 100%);
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+        .feature-card {
+            aspect-ratio: 1;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: scale(1.05);
+        }
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        @media (min-width: 768px) {
+            .grid-layout {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        .gradient-border {
+            position: relative;
+        }
+        .gradient-border::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            right: -1px;
+            bottom: -1px;
+            background: linear-gradient(45deg, #60a5fa, #c084fc);
+            border-radius: inherit;
+            z-index: -1;
+        }
+        .quick-action {
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+        .quick-action:hover {
+            transform: translateY(-2px);
+        }
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 20px;
+            height: 20px;
+            background: #ef4444;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            border: 2px solid #0f172a;
+        }
+        .story-avatar {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            padding: 2px;
+            background: linear-gradient(45deg, #60a5fa, #c084fc);
+        }
+        .story-avatar img {
+            border-radius: 50%;
+            border: 2px solid #0f172a;
+        }
+        .scroll-x {
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .scroll-x::-webkit-scrollbar {
+            display: none;
+        }
+        .action-sheet {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+        .action-sheet.show {
+            transform: translateY(0);
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="pb-20">
+    <!-- Main Container -->
+    <div class="max-w-md mx-auto relative">
+        <!-- Top Navigation -->
+        <nav class="glass sticky top-0 z-50 p-4 rounded-b-2xl">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="story-avatar">
+                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=50&h=50&fit=crop" alt="Profile">
+                    </div>
+                    <div>
+                        <h1 class="font-semibold">Good morning!</h1>
+                        <p class="text-sm text-blue-300">John Doe</p>
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <button class="p-3 glass rounded-xl relative" onclick="toggleNotifications()">
+                        <i class="bi bi-bell text-lg"></i>
+                        <span class="notification-badge">3</span>
+                    </button>
+                    <button class="p-3 glass rounded-xl" onclick="toggleScanner()">
+                        <i class="bi bi-qr-code-scan text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Stories Section -->
+        <section class="px-4 pt-4">
+            <div class="scroll-x">
+                <div class="flex gap-4">
+                    <div class="flex flex-col items-center">
+                        <div class="story-avatar">
+                            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=50&h=50&fit=crop" alt="Story">
+                        </div>
+                        <span class="text-xs mt-1">Jane</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="story-avatar">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop" alt="Story">
+                        </div>
+                        <span class="text-xs mt-1">Mike</span>
+                    </div>
+                    <!-- More stories... -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Balance Card -->
+        <section class="p-4">
+            <div class="glass rounded-2xl p-6 gradient-border">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-semibold">Total Balance</h2>
+                    <button class="text-blue-400" onclick="showBalanceOptions()">
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </button>
+                </div>
+                <div class="flex justify-between items-end">
+                    <div>
+                        <p class="text-3xl font-bold">₹24,563.00</p>
+                        <p class="text-sm text-blue-300">Available Balance</p>
+                    </div>
+                    <button class="bg-blue-500 px-6 py-2 rounded-xl text-sm font-medium hover:bg-blue-600 transition-colors">
+                        Add Money
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Actions Grid -->
+        <section class="p-4">
+            <h2 class="text-xl font-semibold mb-4">Quick Actions</h2>
+            <div class="feature-grid">
+                <div class="glass quick-action rounded-2xl p-4 flex flex-col items-center justify-center">
+                    <i class="bi bi-send text-2xl mb-2 text-blue-400"></i>
+                    <span class="text-sm">Send</span>
+                </div>
+                <div class="glass quick-action rounded-2xl p-4 flex flex-col items-center justify-center">
+                    <i class="bi bi-download text-2xl mb-2 text-green-400"></i>
+                    <span class="text-sm">Receive</span>
+                </div>
+                <div class="glass quick-action rounded-2xl p-4 flex flex-col items-center justify-center">
+                    <i class="bi bi-wallet2 text-2xl mb-2 text-purple-400"></i>
+                    <span class="text-sm">Bills</span>
+                </div>
+                <div class="glass quick-action rounded-2xl p-4 flex flex-col items-center justify-center">
+                    <i class="bi bi-graph-up text-2xl mb-2 text-yellow-400"></i>
+                    <span class="text-sm">Invest</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Mini Apps -->
+        <section class="p-4">
+            <h2 class="text-xl font-semibold mb-4">Mini Apps</h2>
+            <div class="grid-layout">
+                <div class="mini-app-card rounded-2xl p-4" onclick="launchMiniApp('shopping')">
+                    <i class="bi bi-bag text-3xl mb-2 text-pink-400"></i>
+                    <h3 class="font-medium">Shopping</h3>
+                    <p class="text-xs text-blue-300">Discover deals</p>
+                </div>
+                <div class="mini-app-card rounded-2xl p-4" onclick="launchMiniApp('food')">
+                    <i class="bi bi-cup-hot text-3xl mb-2 text-yellow-400"></i>
+                    <h3 class="font-medium">Food</h3>
+                    <p class="text-xs text-blue-300">Order now</p>
+                </div>
+                <div class="mini-app-card rounded-2xl p-4" onclick="launchMiniApp('travel')">
+                    <i class="bi bi-airplane text-3xl mb-2 text-blue-400"></i>
+                    <h3 class="font-medium">Travel</h3>
+                    <p class="text-xs text-blue-300">Plan trip</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recent Transactions -->
+        <section class="p-4">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold">Recent Activity</h2>
+                <button class="text-blue-400 text-sm">See All</button>
+            </div>
+            <div class="glass rounded-2xl p-4 space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center">
+                            <i class="bi bi-bag text-purple-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-medium">Shopping</h3>
+                            <p class="text-sm text-blue-300">Amazon</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-medium">-₹2,499</p>
+                        <p class="text-xs text-blue-300">2h ago</p>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
+                            <i class="bi bi-arrow-down text-green-400"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-medium">Received</h3>
+                            <p class="text-sm text-blue-300">From: Sarah</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-medium text-green-400">+₹5,000</p>
+                        <p class="text-xs text-blue-300">5h ago</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bottom Navigation -->
+        <nav class="fixed bottom-0 left-0 right-0 glass p-4">
+            <div class="max-w-md mx-auto flex justify-between items-center">
+                <button class="flex flex-col items-center text-blue-400">
+                    <i class="bi bi-house-door-fill text-xl"></i>
+                    <span class="text-xs mt-1">Home</span>
+                </button>
+                <button class="flex flex-col items-center">
+                    <i class="bi bi-grid text-xl"></i>
+                    <span class="text-xs mt-1">Apps</span>
+                </button>
+                <button class="flex flex-col items-center relative">
+                    <div class="absolute -top-8 bg-gradient-to-r from-blue-500 to-purple-500 w-14 h-14 rounded-full flex items-center justify-center shadow-lg pulse">
+                        <i class="bi bi-plus-lg text-2xl"></i>
+                    </div>
+                    <span class="text-xs mt-8">Add</span>
+                </button>
+                <button class="flex flex-col items-center">
+                    <i class="bi bi-wallet2 text-xl"></i>
+                    <span class="text-xs mt-1">Wallet</span>
+                </button>
+                <button class="flex flex-col items-center">
+                    <i class="bi bi-person text-xl"></i>
+                    <span class="text-xs mt-1">Profile</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Action Sheet -->
+        <div id="actionSheet" class="action-sheet p-6">
+            <div class="w-12 h-1 bg-gray-400 rounded-full mx-auto mb-6"></div>
+            <div class="space-y-4">
+                <button class="w-full glass rounded-xl p-4 flex items-center gap-3">
+                    <i class="bi bi-eye text-xl"></i>
+                    <span>View Statement</span>
+                </button>
+                <button class="w-full glass rounded-xl p-4 flex items-center gap-3">
+                    <i class="bi bi-share text-xl"></i>
+                    <span>Share Details</span>
+                </button>
+                <button class="w-full glass rounded-xl p-4 flex items-center gap-3">
+                    <i class="bi bi-lock text-xl"></i>
+                    <span>Lock Balance</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize app data
+        const appSlug = 'yumyug-superapp-002';
+        const userId = localStorage.getItem('userId') || `user-${Date.now()}`;
+
+        // Action Sheet Management
+        function showBalanceOptions() {
+            const actionSheet = document.getElementById('actionSheet');
+            actionSheet.classList.add('show');
+            
+            // Close on backdrop click
+            document.addEventListener('click', function closeSheet(e) {
+                if (!actionSheet.contains(e.target)) {
+                    actionSheet.classList.remove('show');
+                    document.removeEventListener('click', closeSheet);
+                }
+            });
+        }
+
+        // Mini App Management
+        function launchMiniApp(appType) {
+            // Store current app state
+            localStorage.setItem('currentMiniApp', appType);
+            
+            // Show loading animation
+            showLoading();
+
+            // Simulate app loading
+            setTimeout(() => {
+                hideLoading();
+                // Launch mini app logic here
+                alert(`Launching ${appType} mini app`);
+            }, 1500);
+        }
+
+        // Loading Management
+        function showLoading() {
+            const loader = document.createElement('div');
+            loader.id = 'appLoader';
+            loader.className = 'fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50';
+            loader.innerHTML = `
+                <div class="glass rounded-2xl p-8 flex flex-col items-center">
+                    <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full rotate-loader"></div>
+                    <p class="mt-4 text-sm">Loading Mini App...</p>
+                </div>
+            `;
+            document.body.appendChild(loader);
+        }
+
+        function hideLoading() {
+            const loader = document.getElementById('appLoader');
+            if (loader) loader.remove();
+        }
+
+        // Activity Tracking
+        async function trackActivity(activity) {
+            try {
+                const response = await fetch('https://r0c8kgwocscg8gsokogwwsw4.zetaverse.one/mongodb', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer uUHob6nbSNUZx9leSw9ZBKzbEpy2',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        appSlug,
+                        action: 'create',
+                        collection: 'user_activity',
+                        data: {
+                            userId,
+                            activity,
+                            timestamp: new Date().toISOString()
+                        }
+                    })
+                });
+                
+                const data = await response.json();
+                console.log('Activity tracked:', data);
+            } catch (error) {
+                console.error('Failed to track activity:', error);
+            }
+        }
+
+        // Scanner Management
+        function toggleScanner() {
+            // Show scanning interface
+            const scanner = document.createElement('div');
+            scanner.className = 'fixed inset-0 bg-black/90 flex flex-col items-center justify-center z-50';
+            scanner.innerHTML = `
+                <div class="relative w-64 h-64 mb-8">
+                    <div class="absolute inset-0 border-2 border-blue-500 rounded-lg"></div>
+                    <div class="absolute top-0 w-full h-0.5 bg-blue-500 animate-scan"></div>
+                </div>
+                <p class="text-center mb-4">Align QR code within frame</p>
+                <button class="glass px-6 py-2 rounded-xl" onclick="this.parentElement.remove()">
+                    Cancel
+                </button>
+            `;
+            document.body.appendChild(scanner);
+        }
+
+        // Notification Management
+        function toggleNotifications() {
+            const notifications = document.createElement('div');
+            notifications.className = 'fixed inset-0 bg-black/50 backdrop-blur-sm flex items-end z-50';
+            notifications.innerHTML = `
+                <div class="w-full max-w-md mx-auto glass rounded-t-2xl p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-semibold">Notifications</h2>
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-green-500/20 flex-shrink-0 flex items-center justify-center">
+                                <i class="bi bi-cash text-green-400"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium">Payment Received</h3>
+                                <p class="text-sm text-blue-300">₹5,000 from Sarah</p>
+                                <p class="text-xs text-blue-300 mt-1">2 minutes ago</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-yellow-500/20 flex-shrink-0 flex items-center justify-center">
+                                <i class="bi bi-gift text-yellow-400"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-medium">Special Offer</h3>
+                                <p class="text-sm text-blue-300">20% off on shopping</p>
+                                <p class="text-xs text-blue-300 mt-1">1 hour ago</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(notifications);
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', () => {
+            // Track app launch
+            trackActivity('app_launch');
+
+            // Add touch feedback
+            document.querySelectorAll('button').forEach(button => {
+                button.addEventListener('touchstart', () => button.style.opacity = '0.7');
+                button.addEventListener('touchend', () => button.style.opacity = '1');
+            });
+        });
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
